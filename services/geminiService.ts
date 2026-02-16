@@ -19,10 +19,26 @@ RULES:
 6. Return only the translated text.
 `;
 
+export const validateApiKey = async (apiKey: string): Promise<boolean> => {
+  if (!apiKey) return false;
+  try {
+    const ai = new GoogleGenAI({ apiKey });
+    // Simple test call
+    await ai.models.generateContent({
+      model: "gemini-1.5-flash",
+      contents: "Hi",
+    });
+    return true;
+  } catch (error) {
+    console.error("API Key validation failed:", error);
+    return false;
+  }
+};
+
 export const translateBatch = async (texts: string[], userApiKey?: string): Promise<string[]> => {
   const activeKey = userApiKey || process.env.API_KEY;
   if (!activeKey) {
-    throw new Error("API Key is missing. Please provide one in the settings.");
+    throw new Error("API Key is missing.");
   }
 
   const ai = new GoogleGenAI({ apiKey: activeKey });

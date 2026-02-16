@@ -1,90 +1,80 @@
 
-# 🎬 Persian Subtitle Pro (مترجم تخصصی زیرنویس)
+# 🎬 Persian Subtitle Pro (Advanced SRT Translator)
 
-این اپلیکیشن یک ابزار پیشرفته و هوشمند برای ترجمه فایل‌های زیرنویس (SRT) به زبان **فارسی محاوره‌ای و سینمایی** است. با بهره‌گیری از مدل هوش مصنوعی **Gemini 3**، این برنامه تفاوت‌های فرهنگی و اصطلاحات عامیانه را درک کرده و زیرنویسی کاملاً طبیعی تولید می‌کند.
-
----
-
-## 🚀 ویژگی‌های کلیدی
-- **ترجمه محاوره‌ای (شکسته):** تبدیل متون کتابی به زبان واقعی مردم ایران.
-- **حفظ زمان‌بندی (Sync):** حفظ دقیق زمان‌بندی‌های فایل SRT بدون کوچکترین تغییر.
-- **ویرایش زنده:** امکان ویرایش دستی هر سطر بلافاصله پس از ترجمه.
-- **تم تاریک (Dark Mode):** رابط کاربری مدرن مطابق با استانداردهای ویندوز ۱۱.
-- **پشتیبانی از RTL:** چیدمان کاملاً راست‌به‌چپ برای زبان فارسی.
+Persian Subtitle Pro is a high-performance Windows desktop application designed to translate English movie subtitles into **Colloquial Iranian Persian (Mahavorei)** using the **Gemini 3** AI engine.
 
 ---
 
-## 💻 پیش‌نیازهای نصب بر روی ویندوز ۱۰ و ۱۱
-
-قبل از شروع، اطمینان حاصل کنید که ابزارهای زیر بر روی سیستم شما نصب هستند:
-
-1.  **Node.js (نسخه ۱۸ یا بالاتر):** برای اجرای محیط جاوااسکریپت.
-    *   [دانلود Node.js](https://nodejs.org/)
-2.  **Git:** برای دریافت کدها از مخزن گیت‌هاب.
-    *   [دانلود Git](https://git-scm.com/)
-3.  **یک ویرایشگر کد (مانند VS Code):** برای شخصی‌سازی‌های احتمالی.
-4.  **اتصال اینترنت:** برای دسترسی به API هوش مصنوعی.
+## 🌟 Key Features
+- **Cinematic Translation:** Understands slang, humor, and cultural context.
+- **Batch Processing:** Handles long subtitle files efficiently without hitting API limits.
+- **API Key Validation:** Real-time validation for your Gemini API key.
+- **Stop/Cancel Support:** Stop translation at any point without losing progress.
+- **Windows Optimized:** Native-like experience for Windows 10 and 11.
+- **Lion & Sun Background:** Patriotic subtle interface.
 
 ---
 
-## 🛠 مراحل نصب و اجرا (Step-by-Step)
-
-### ۱. دریافت پروژه
-ابتدا ترمینال (PowerShell یا CMD) را باز کرده و دستور زیر را تایپ کنید:
-```bash
-git clone https://github.com/your-username/persian-subtitle-pro.git
-cd persian-subtitle-pro
-```
-
-### ۲. نصب وابستگی‌ها
-تمام کتابخانه‌های مورد نیاز را با دستور زیر نصب کنید:
-```bash
-npm install
-```
-
-### ۳. تنظیم کلید API
-برنامه برای کارکرد نیاز به API Key گوگل دارد. کلید را در فیلد مربوطه در بالای محیط نرم‌افزار وارد کنید.
-
-### ۴. اجرای برنامه در حالت توسعه
-برای مشاهده برنامه در مرورگر:
-```bash
-npm run dev
-```
-برنامه به طور خودکار در مرورگر شما باز خواهد شد.
+## 💻 System Requirements (Windows 10/11)
+- **Node.js:** v18.0.0 or higher.
+- **Git:** Required for cloning.
+- **Internet:** High-speed connection for AI processing.
 
 ---
 
-## 📦 تبدیل به فایل اجرایی ویندوز (.exe)
+## 🛠 Installation & Quick Start
 
-اگر می‌خواهید این برنامه را به صورت یک نرم‌افزار مستقل ویندوزی (Desktop App) داشته باشید، از ابزار **Electron** استفاده می‌کنیم:
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/your-username/persian-subtitle-pro.git
+   cd persian-subtitle-pro
+   ```
 
-1. **نصب Electron Builder:**
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Run in development mode:**
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## 📦 Building the Windows EXE (Fixed)
+
+To create a production-ready `.exe` for Windows 10 or 11:
+
+1. **Install Electron and Builder:**
    ```bash
    npm install --save-dev electron electron-builder
    ```
 
-2. **بیلد کردن پروژه:**
+2. **Build the assets:**
    ```bash
    npm run build
    ```
 
-3. **ایجاد فایل EXE:**
-   پس از اجرای دستور بیلد، پوشه‌ای به نام `dist` ایجاد می‌شود که شامل فایل `PersianSubtitlePro.exe` و اینستالر برنامه خواهد بود.
+3. **Package for Windows (x64):**
+   ```bash
+   npx electron-builder --win --x64
+   ```
+   *The generated installer will be located in the `dist/` directory.*
 
 ---
 
-## 📖 نحوه استفاده
-1. فایل زیرنویس انگلیسی خود (`.srt`) را با دکمه **Open SRT** انتخاب کنید.
-2. بر روی دکمه **Translate** کلیک کنید و منتظر بمانید تا نوار پیشرفت تکمیل شود.
-3. در صورت نیاز، ترجمه‌ها را در پنل سمت راست ویرایش کنید.
-4. دکمه **Save Output** را بزنید تا فایل جدید با نام `filename.fa.srt` ذخیره شود.
+## 📖 Usage Guide
+1. **API Key:** Paste your Gemini API key in the top bar and click **Validate**.
+2. **Load SRT:** Drag and drop or browse for an English `.srt` file.
+3. **Translate:** Click **Translate All**. You will see a progress bar and a token estimate.
+4. **Edit:** You can manually tweak any translated line in real-time.
+5. **Save:** Export the file as `.fa.srt`.
 
 ---
 
-## 🛠 رفع مشکلات احتمالی (Troubleshooting)
-*   **مشکل فونت:** اگر فونت‌های فارسی به درستی نمایش داده نمی‌شوند، اطمینان حاصل کنید که فونت Vazirmatn در سیستم لود شده است.
-*   **خطای تعداد سطرها:** اگر فایل شما دارای تعداد سطرهای بسیار زیاد است، برنامه به صورت خودکار آن‌ها را در دسته‌های ۸ تایی ترجمه می‌کند تا پایداری حفظ شود.
-*   **خطای API:** در صورت بروز خطای ۴۰۱ یا ۴۰۳، اعتبار API Key خود را بررسی کنید.
+## 🦁 Patriotic Theme
+This application features the historical **Lion and Sun** flag as a background element to celebrate Iranian heritage and culture.
 
 ---
-**توسعه داده شده با ❤️ برای جامعه فارسی‌زبان**
+**Developed for the Iranian movie community.**
