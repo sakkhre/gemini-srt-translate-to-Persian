@@ -3,13 +3,19 @@ import { SubtitleItem } from '../types';
 
 export const parseSRT = (content: string): SubtitleItem[] => {
   const items: SubtitleItem[] = [];
-  const blocks = content.trim().split(/\n\s*\n/);
+  // بهبود جداکننده بلوک‌ها برای پشتیبانی از انواع پایان خط (Windows/Unix) و فضاهای خالی
+  const blocks = content.trim().split(/\r?\n\s*\r?\n/);
 
   blocks.forEach((block) => {
-    const lines = block.split('\n');
+    const lines = block.split(/\r?\n/);
     if (lines.length >= 3) {
-      const id = parseInt(lines[0].trim());
-      const timeMatch = lines[1].match(/(\d{2}:\d{2}:\d{2},\d{3}) --> (\d{2}:\d{2}:\d{2},\d{3})/);
+      const idStr = lines[0].trim();
+      const id = parseInt(idStr);
+      
+      if (isNaN(id)) return;
+
+      const timeLine = lines[1].trim();
+      const timeMatch = timeLine.match(/(\d{2}:\d{2}:\d{2},\d{3}) --> (\d{2}:\d{2}:\d{2},\d{3})/);
       
       if (timeMatch) {
         const originalText = lines.slice(2).join('\n').trim();

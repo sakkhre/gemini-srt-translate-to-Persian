@@ -34,43 +34,55 @@ const App: React.FC = () => {
 
   const handleTranslateAll = async () => {
     if (subtitles.length === 0) return;
+    if (!apiKey) {
+      alert('لطفاً ابتدا کلید API خود را وارد کنید.');
+      return;
+    }
     
     setStatus(TranslationStatus.PROCESSING);
-    const batchSize = 10;
-    const totalBatches = Math.ceil(subtitles.length / batchSize);
+    const batchSize = 8; // کاهش اندازه دسته برای پایداری بیشتر در مدل‌های فلش
+    const totalItems = subtitles.length;
     
     const updatedSubs = [...subtitles];
 
     try {
-      for (let i = 0; i < totalBatches; i++) {
-        const start = i * batchSize;
-        const end = Math.min(start + batchSize, subtitles.length);
-        const batchItems = updatedSubs.slice(start, end);
-        const batchTexts = batchItems.map(item => item.originalText);
+      for (let i = 0; i < totalItems; i += batchSize) {
+        const end = Math.min(i + batchSize, totalItems);
+        const batchTexts = updatedSubs.slice(i, end).map(item => item.originalText);
 
-        // Mark items as translating
-        for (let j = start; j < end; j++) {
+        // Mark items in current batch as translating
+        for (let j = i; j < end; j++) {
           updatedSubs[j].isTranslating = true;
         }
         setSubtitles([...updatedSubs]);
 
-        const translations = await translateBatch(batchTexts, apiKey);
+        try {
+          const translations = await translateBatch(batchTexts, apiKey);
 
-        // Apply translations
-        for (let j = 0; j < translations.length; j++) {
-          const index = start + j;
-          updatedSubs[index].translatedText = translations[j];
-          updatedSubs[index].isTranslating = false;
+          // Apply translations defensively
+          for (let j = 0; j < translations.length; j++) {
+            const index = i + j;
+            if (index < totalItems) {
+              updatedSubs[index].translatedText = translations[j];
+              updatedSubs[index].isTranslating = false;
+            }
+          }
+        } catch (batchError) {
+          console.error(`Error in batch starting at ${i}:`, batchError);
+          // In case of batch error, stop translating indicators
+          for (let j = i; j < end; j++) {
+            updatedSubs[j].isTranslating = false;
+          }
         }
 
-        setProgress(Math.round(((i + 1) / totalBatches) * 100));
+        setProgress(Math.round((end / totalItems) * 100));
         setSubtitles([...updatedSubs]);
       }
       setStatus(TranslationStatus.COMPLETED);
     } catch (error) {
       console.error(error);
       setStatus(TranslationStatus.ERROR);
-      alert('خطا در ترجمه. لطفاً کلید API خود را بررسی کنید.');
+      alert('خطای کلی در ترجمه. لطفاً اتصال اینترنت و کلید API خود را بررسی کنید.');
     }
   };
 
@@ -91,11 +103,11 @@ const App: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen bg-slate-950 text-slate-100 overflow-hidden select-none">
-      {/* Title Bar (Simulating Windows) */}
+      {/* Title Bar */}
       <header className="flex items-center justify-between px-4 py-2 bg-slate-900 border-b border-slate-800 shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-xl font-bold">P</div>
-          <h1 className="text-sm font-semibold tracking-wide">Persian Subtitle Pro v1.0</h1>
+          <h1 className="text-sm font-semibold tracking-wide">Persian Subtitle Pro v1.1</h1>
         </div>
         
         <div className="flex items-center gap-4">
@@ -166,7 +178,6 @@ const App: React.FC = () => {
 
       {/* Main Workspace */}
       <main className="flex-grow flex overflow-hidden">
-        {/* Subtitle Grid Header */}
         <div className="flex flex-col w-full h-full overflow-hidden">
           <div className="grid grid-cols-[80px_180px_1fr_1fr] bg-slate-900 border-b border-slate-800 text-xs font-bold uppercase tracking-wider py-2 px-4 sticky top-0 z-10">
             <div className="text-center opacity-50">ردیف</div>
@@ -177,13 +188,14 @@ const App: React.FC = () => {
 
           <div className="flex-grow overflow-y-auto">
             {subtitles.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center text-slate-500 gap-4">
+              <div className="h-full flex flex-col items-center justify-center text-slate-500 gap-4 p-8 text-center">
                 <svg className="w-16 h-16 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
                 <p className="text-lg">فایل زیرنویس خود را برای شروع به اینجا بکشید یا دکمه بارگذاری را بزنید</p>
+                <p className="text-xs opacity-40">پشتیبانی از فایل‌های حجیم با بیش از ۱۰۰۰ سطر</p>
               </div>
             ) : (
               subtitles.map((item) => (
-                <div key={item.id} className={`grid grid-cols-[80px_180px_1fr_1fr] border-b border-slate-900 hover:bg-slate-900/40 transition-colors py-3 px-4 items-start ${item.isTranslating ? 'bg-blue-900/10' : ''}`}>
+                <div key={`${item.id}-${item.startTime}`} className={`grid grid-cols-[80px_180px_1fr_1fr] border-b border-slate-900 hover:bg-slate-900/40 transition-colors py-3 px-4 items-start ${item.isTranslating ? 'bg-blue-900/10' : ''}`}>
                   <div className="text-center text-sm font-mono text-slate-500 pt-2">{item.id}</div>
                   <div className="text-[10px] font-mono text-slate-400 pt-2 flex flex-col">
                     <span>{item.startTime}</span>
