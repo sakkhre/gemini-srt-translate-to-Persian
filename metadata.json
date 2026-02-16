@@ -1,5 +1,5 @@
 {
-  "name": "Persian Subtitle Pro - مترجم تخصصی زیرنویس",
+  "name": "Persian Subtitle Pro",
   "description": "یک ابزار پیشرفته برای ترجمه فایل‌های زیرنویس SRT به زبان فارسی محاوره‌ای با استفاده از هوش مصنوعی Gemini. دارای محیط کاربری مدرن، پشتیبانی از راست‌به‌چپ (RTL) و ویرایشگر پیشرفته.",
   "requestFramePermissions": [
     "camera",
