@@ -19,8 +19,13 @@ RULES:
 6. Return only the translated text.
 `;
 
-export const translateBatch = async (texts: string[]): Promise<string[]> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+export const translateBatch = async (texts: string[], userApiKey?: string): Promise<string[]> => {
+  const activeKey = userApiKey || process.env.API_KEY;
+  if (!activeKey) {
+    throw new Error("API Key is missing. Please provide one in the settings.");
+  }
+
+  const ai = new GoogleGenAI({ apiKey: activeKey });
   
   try {
     const response = await ai.models.generateContent({

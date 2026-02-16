@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { SubtitleItem, TranslationStatus } from './types';
 import { parseSRT, stringifySRT } from './utils/srtParser';
 import { translateBatch } from './services/geminiService';
@@ -9,7 +9,12 @@ const App: React.FC = () => {
   const [status, setStatus] = useState<TranslationStatus>(TranslationStatus.IDLE);
   const [progress, setProgress] = useState(0);
   const [fileName, setFileName] = useState<string>('');
+  const [apiKey, setApiKey] = useState<string>(() => localStorage.getItem('gemini_api_key') || '');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    localStorage.setItem('gemini_api_key', apiKey);
+  }, [apiKey]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -49,7 +54,7 @@ const App: React.FC = () => {
         }
         setSubtitles([...updatedSubs]);
 
-        const translations = await translateBatch(batchTexts);
+        const translations = await translateBatch(batchTexts, apiKey);
 
         // Apply translations
         for (let j = 0; j < translations.length; j++) {
@@ -65,6 +70,7 @@ const App: React.FC = () => {
     } catch (error) {
       console.error(error);
       setStatus(TranslationStatus.ERROR);
+      alert('خطا در ترجمه. لطفاً کلید API خود را بررسی کنید.');
     }
   };
 
@@ -91,7 +97,18 @@ const App: React.FC = () => {
           <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-xl font-bold">P</div>
           <h1 className="text-sm font-semibold tracking-wide">Persian Subtitle Pro v1.0</h1>
         </div>
-        <div className="flex gap-4">
+        
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 bg-slate-800/50 px-2 py-1 rounded border border-slate-700">
+            <span className="text-[10px] text-slate-400 font-bold whitespace-nowrap">Gemini API Key:</span>
+            <input 
+              type="password" 
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              placeholder="کلید خود را وارد کنید..."
+              className="bg-transparent border-none outline-none text-xs w-32 md:w-48 text-blue-400 placeholder:text-slate-600"
+            />
+          </div>
           <div className="flex items-center gap-2 text-xs opacity-60">
              <span className="hidden md:inline">Windows 11 Compatible</span>
              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
